@@ -334,9 +334,22 @@ class Inference:
         return results
     
     def predict_single(self, frame_rgb: np.ndarray) -> Any:
-        """Single frame prediction wrapper"""
-        results = self.predict_batch([frame_rgb])
-        return results[0] if results else None
+        """Single frame prediction wrapper with enhanced error handling"""
+        if frame_rgb is None:
+            print("⚠️ Received None frame in predict_single")
+            return None
+            
+        try:
+            if frame_rgb.size == 0 or frame_rgb.shape[0] == 0 or frame_rgb.shape[1] == 0:
+                print(f"⚠️ Received invalid frame shape: {frame_rgb.shape}")
+                return None
+                
+            results = self.predict_batch([frame_rgb])
+            return results[0] if results else None
+            
+        except Exception as e:
+            print(f"⚠️ Error in predict_single: {str(e)}")
+            return None
     
     def get_performance_stats(self) -> Dict[str, float]:
         """Get performance statistics"""
